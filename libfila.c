@@ -3,17 +3,22 @@
 
 fila_t* cria_fila ()
 {
-        fila_t *new = (fila_t*)malloc(sizeof(fila_t));
-        new->ini = NULL;        /* inicializa ponteiro ini */
-        new->fim = NULL;        /* inicializa ponteiro fim */
-        new->tamanho = 0;       /* inicializa tamanho */       
+        fila_t *new;
 
-        return new;
+        /* cria fila vazia e a retorna */
+        if ( new = (fila_t*)malloc(sizeof(fila_t))){
+                new->ini = NULL;        /* inicializa ponteiro ini */
+                new->fim = NULL;        /* inicializa ponteiro fim */
+                new->tamanho = 0;       /* inicializa tamanho */       
+                return new;
+        }
+        /* se falhar criacao da fila retornar NULL*/
+        return NULL;
 }
 
 int insere_fila (fila_t* f, int elemento)
 {
-    nodo_f_t * novo_nodo;   /* declara novo elemento */
+        nodo_f_t * novo_nodo;   /* declara novo elemento */
         novo_nodo = (nodo_f_t *)malloc(sizeof(nodo_f_t));
         if (fila_vazia(f)){    /* se fila for vazia */
                 f->fim = novo_nodo;     /* novo nodo eh inicio */
@@ -33,14 +38,18 @@ int insere_fila (fila_t* f, int elemento)
 int retira_fila (fila_t* f, int* elemento)
 {
         int aux = 0;
-
-        /* quando fila tem apenas o ini */
+        /* se fila for vazia retorna 0 */
+        if (fila_vazia(f)) 
+                return 0;
+        /* se fila tiver apenas 1 elemento retorna 1*/
         if (f->ini->prox == NULL){
                 aux = f->ini->chave;
                 free(f->ini);
-                return aux;
+                return 1;
         }
 
+        /* enquanto o atual nao estiver apontando para o NULL */
+        /* faz ele apontar para o proximo */
         nodo_f_t * atual = f->ini;
         while(atual->prox->prox != NULL){
                 atual = atual->prox;

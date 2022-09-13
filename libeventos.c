@@ -169,22 +169,19 @@ void cria_evento_de_fim (lef_t *eventos) {
 
 /* Funcoes de execucao */
 /* ------------------------------------------------------------------------------- */
-/* se o local estiver lotado, decide se vai para a fila ou se vai para outro lugar */
-/* se a paciencia for suficiente, entra na fila */
-/* caso não, cria um evento de saida da pessoa */
-/* cria o evento de disceminacao para a pessoa */
-/* cria o evento de saida da pessoa */
 void evento_chegada (mundo_m mundo, lef_t *eventos, int id_pessoa, int id_local) {
     local_m local = mundo.locais[id_local-1]; /* variavel para o local */
     pessoa_m pessoa = mundo.pessoas[id_pessoa-1]; /* variavel para a pessoa */
     int tpl; 
 
+    /* se o local estiver lotado, decide se vai para a fila ou se vai para outro lugar */
     if (cardinalidade (local.pessoas) == local.lot_max) {
+        /* se a paciencia for suficiente, entra na fila */
         if ((pessoa.paciencia / 4 - tamanho_fila (local.fila)) > 0) {
             insere_fila (local.fila, id_pessoa);
             tratamento_saida_ev_chegada (mundo, pessoa, local, 2); 
         }
-        else { 
+        else { /* caso não, cria um evento de saida da pessoa */
             cria_evento_de_saida (pessoa, local, eventos, mundo.tempo_atual);
             tratamento_saida_ev_chegada (mundo, pessoa, local, 3);
         }
@@ -192,14 +189,14 @@ void evento_chegada (mundo_m mundo, lef_t *eventos, int id_pessoa, int id_local)
         insere_conjunto (local.pessoas, id_pessoa); 
         tratamento_saida_ev_chegada (mundo, pessoa, local, 1);
         tpl = 1 + (pessoa.paciencia/10+gerar_numeros_aleatorios (2, 6)); 
-        
+        /* cria o evento de disceminacao para a pessoa */
         cria_evento_de_disceminacao (pessoa, local, eventos, mundo.tempo_atual+gerar_numeros_aleatorios (0, tpl));
+        /* cria o evento de saida da pessoa */
         cria_evento_de_saida (pessoa, local, eventos, mundo.tempo_atual+tpl);
     }
 }
 
 /* calcula o proximo local, distancia entre eles e a velocidade de locomoçcao da pessoa */
-/* cria evento de chegada da pessoa no proximo lugar */
 void evento_saida (mundo_m mundo, lef_t *eventos, int id_pessoa, int id_local) {
     local_m local = mundo.locais[id_local-1]; /* variavel para o local */
     pessoa_m pessoa = mundo.pessoas[id_pessoa-1]; /* variavel para a pessoa */
@@ -214,6 +211,7 @@ void evento_saida (mundo_m mundo, lef_t *eventos, int id_pessoa, int id_local) {
 
     retira_conjunto (local.pessoas, pessoa.id);
 
+    /* cria evento de chegada da pessoa no proximo lugar */
     cria_evento_de_chegada (pessoa, local_dest, eventos, mundo.tempo_atual+(tdl/15));
     if (!fila_vazia (local.fila)) {
         retira_fila (local.fila, &pessoa_fila);
@@ -247,16 +245,17 @@ void evento_disseminacao (mundo_m mundo, int id_pessoa, int id_local, conjunto_t
     printf ("\n");
 }
 
-/* libera todos os rumores das pessoas */
-/* libera as pessoas dos locais e as filas */
-/* libera os rumores do mundo */
 void evento_fim (mundo_m mundo) {
     int count;
+
+    /* libera todos os rumores das pessoas */
     for (count = 0; count < mundo.n_pessoas; count++) 
         destroi_conjunto (mundo.pessoas[count].rumores);
+    /* libera as pessoas dos locais e as filas */        
     for (count = 0; count < mundo.n_locais; count++) {
         destroi_conjunto (mundo.locais[count].pessoas);
         destroi_fila (mundo.locais[count].fila);
     }
+    /* libera os rumores do mundo */
     destroi_conjunto (mundo.rumores);
 }

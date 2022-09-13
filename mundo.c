@@ -49,7 +49,7 @@ int main () {
             case CS_DISCEMINACAO: {
                 ev_dados_disceminacao = (dados_disceminacao_m*)ev_atual->dados;
                 if (fim_mundo == 0) {
-                     /* chama o evento de dsiceminacao */
+                     /* chama o evento de disceminacao */
                     evento_disseminacao (mundo, ev_dados_disceminacao->id_pessoa_origem, ev_dados_disceminacao->id_local, ev_dados_disceminacao->cj_rumores);
                 }
                 /* libera as estruturas do evento */
